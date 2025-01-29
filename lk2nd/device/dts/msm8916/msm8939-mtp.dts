@@ -37,12 +37,15 @@
 	sony-tulip {
 		model = "Sony Xperia M4 Aqua";
 		compatible = "sony,kanuti-tulip";
-		/*
-		 * Similar to xperia-leo, this match is probably too broad, but so far
-		 * this is the only Sony device in the msm8916 family.
-		 */
-		lk2nd,match-bootloader = "s1";
+		lk2nd,match-panel;
 		lk2nd,dtb-files = "msm8939-sony-xperia-kanuti-tulip";
+
+		panel {
+			compatible = "sony,kanuti-tulip-panel", "lk2nd,panel";
+			qcom,mdss_dsi_nt35521_720p_video {
+				compatible = "sony,tulip-truly-nt35521";
+			};
+		};
 	};
 
 	xiaomi-ferrari {
