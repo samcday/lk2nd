@@ -4,4 +4,9 @@ MODULES += lib/libfdt
 
 OBJS += \
 	$(LOCAL_DIR)/mac.o \
-	$(LOCAL_DIR)/serialno.o \
+	$(LOCAL_DIR)/serialno.o
+
+ifneq ($(filter ENABLE_KASLRSEED_SUPPORT=1,$(DEFINES)),)
+OBJS += \
+	$(LOCAL_DIR)/rng-seed.o
+endif

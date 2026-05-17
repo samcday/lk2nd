@@ -54,7 +54,6 @@
 #define NODE_PROPERTY_MAX_LEN   64
 #define ADD_OF(a, b) (UINT_MAX - b > a) ? (a + b) : UINT_MAX
 #define ADDR_ALIGNMENT 16
-#define RNG_SEED_BYTES 64
 /** 512KB stack **/
 #define DTBO_STACK_SIZE (524288)
 #define MAX_DTBO_SZ 2097152
@@ -2222,28 +2221,6 @@ static int call_dt_update_handlers(void *fdt, const char *cmdline,
 	return 0;
 }
 
-#if ENABLE_KASLRSEED_SUPPORT
-static void add_rng_seed(void *fdt, uint32_t offset)
-{
-	uintptr_t rngseed[RNG_SEED_BYTES / sizeof(uintptr_t)];
-	int ret;
-
-	ret = scm_random(rngseed, sizeof(rngseed));
-	if (ret)
-	{
-		dprintf(CRITICAL, "ERROR: Cannot generate RNG seed\n");
-		return;
-	}
-
-	ret = fdt_setprop(fdt, offset, "rng-seed", rngseed, sizeof(rngseed));
-	memset(rngseed, 0, sizeof(rngseed));
-	if (ret)
-		dprintf(CRITICAL, "ERROR: Cannot update chosen node [rng-seed] - 0x%x\n", ret);
-	else
-		dprintf(CRITICAL, "rng-seed is added to chosen node\n");
-}
-#endif
-
 /* Top level function that updates the device tree. */
 int update_device_tree(void *fdt, const char *cmdline, enum boot_type boot_type,
 					   void *ramdisk, uint32_t ramdisk_size)
@@ -2325,8 +2302,6 @@ int update_device_tree(void *fdt, const char *cmdline, enum boot_type boot_type,
 	}
 
 #if ENABLE_KASLRSEED_SUPPORT
-	add_rng_seed(fdt, offset);
-
 	if (!scm_random((uintptr_t *)&kaslrseed, sizeof(kaslrseed))) {
 		/* Adding Kaslr Seed to the chosen node */
 		ret = fdt_appendprop_u64 (fdt, offset, (const char *)"kaslr-seed", (uint64_t)kaslrseed);

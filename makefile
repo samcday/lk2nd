@@ -166,11 +166,6 @@ else
   DEFINES += MOUNT_EMMC_LE=0
 endif
 
-# Enable kaslr/rng seed support by default for msm8960 lk2nd.
-ifeq ($(PROJECT),lk2nd-msm8960)
-  ENABLE_KASLRSEED ?= 1
-endif
-
 #Enable kaslr seed support
 ifeq ($(ENABLE_KASLRSEED),1)
   DEFINES += ENABLE_KASLRSEED_SUPPORT=1

@@ -1085,8 +1085,6 @@ void scm_elexec_call(paddr_t kernel_entry, paddr_t dtb_offset)
 	ASSERT(0);
 }
 
-#define SCM_RANDOM_MAX_BYTES 64
-
 /* SCM Random Command */
 int scm_random(uintptr_t * rbuf, uint32_t  r_len)
 {
@@ -1094,7 +1092,7 @@ int scm_random(uintptr_t * rbuf, uint32_t  r_len)
 	struct tz_prng_data data;
 	scmcall_arg scm_arg = {0};
 	// Memory passed to TZ should be algined to cache line
-	BUF_DMA_ALIGN(rand_buf, SCM_RANDOM_MAX_BYTES);
+	BUF_DMA_ALIGN(rand_buf, sizeof(uintptr_t));
 
 	// r_len must be less than or equal to sizeof(rand_buf) to avoid memory corruption.
 	if (r_len > sizeof(rand_buf))
