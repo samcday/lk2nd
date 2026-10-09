@@ -250,6 +250,9 @@
 ### lk2nd-msm8660
 - HP TouchPad (Wi-Fi) (topaz)
 
+### lk2nd-mdm9607
+- Reliance Jio JioFi M2 (JMR540)
+
 ## Minimal DTB Overlay
 
 The newest devices supported by lk2nd (particularly SDM429/SDM439/SDM632 ones)

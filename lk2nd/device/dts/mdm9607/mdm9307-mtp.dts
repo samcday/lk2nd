@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: BSD-3-Clause
+
+#include <skeleton32.dtsi>
+#include <lk2nd.dtsi>
+
+/*
+ * MDM9307 is fully compatible with MDM9607. The stock bootloader only
+ * selects this DTB from the QCDT table with the SoC revision used by the
+ * stock device trees (0x10000).
+ */
+/ {
+	qcom,msm-id = <QCOM_ID_MDM9307 0x10000>;
+	qcom,board-id = <QCOM_BOARD_ID_MTP 0>;
+};
+
+&lk2nd {
+	model = "Reliance Jio JioFi M2";
+	compatible = "jio,jiofi-m2";
+};

@@ -163,6 +163,15 @@ void target_init(void)
 
 	spmi_init(PMIC_ARB_CHANNEL_NUM, PMIC_ARB_OWNER_ID);
 
+	/*
+	 * Make a PS_HOLD drop (e.g. a reboot from the OS) do a warm reset
+	 * instead of a shutdown, like mdm9625 does. pmic_reset_configure()
+	 * cannot be used here because board_pmic_info() is not reliable on
+	 * all devices, so configure both PON register layouts.
+	 */
+	pm8x41_v2_reset_configure(PON_PSHOLD_WARM_RESET);
+	pm8x41_reset_configure(PON_PSHOLD_WARM_RESET);
+
 #if SMD_SUPPORT
 	rpm_smd_init();
 #endif

@@ -99,9 +99,9 @@ unsigned target_get_max_flash_size(void)
 	uint64_t ddr_size = smem_get_ddr_size();
 
 	if (ddr_size == 0x8000000)
-		/*128MB DDR scratch size*/
-		return (SCRATCH_REGION1_SIZE_128 + SCRATCH_REGION2_SIZE_128);
+		/*128MB DDR: contiguous scratch region starting at SCRATCH_ADDR_128*/
+		return SCRATCH_REGION1_SIZE_128;
 	else
-		/*256MB DDR scratch size*/
-		return (SCRATCH_REGION_SIZE_256 + SCRATCH_REGION2_SIZE_256);
+		/*256MB DDR: contiguous scratch region starting at SCRATCH_ADDR_256*/
+		return SCRATCH_REGION_SIZE_256;
 }

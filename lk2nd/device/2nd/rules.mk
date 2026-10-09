@@ -35,6 +35,12 @@ $(OUTBINDTB): $(OUTBIN) $(ADTBS)
 endif
 
 # QCDT image
+#
+# The QCDT page size must not be smaller than the page size of the storage
+# the boot image is booted from: the stock bootloader reads the selected DTB
+# directly from flash and NAND reads require the offset to be page-aligned.
+# Stock QCDT tables are generated with the NAND page size (4096 for mdm9607).
+QCDT_PAGE_SIZE ?= 2048
 ifneq ($(LK2ND_QCDT),)
 OUTQCDT := $(LK2ND_QCDT)
 $(warning WARNING: Using pre-built QCDT image from $(LK2ND_QCDT))
@@ -42,7 +48,7 @@ else ifneq ($(QCDTBS),)
 OUTQCDT := $(BUILDDIR)/qcdt.img
 $(OUTQCDT): $(QCDTBS)
 	@echo generating QCDT image with $(words $(QCDTBS)) DTBs: $@
-	$(NOECHO)lk2nd/scripts/dtbTool -o $@ $(QCDTBS)
+	$(NOECHO)lk2nd/scripts/dtbTool -s $(QCDT_PAGE_SIZE) -o $@ $(QCDTBS)
 endif
 
 # Generate a 1-byte RAM disk containing a single zero

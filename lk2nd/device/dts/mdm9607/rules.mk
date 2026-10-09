@@ -2,4 +2,5 @@
 LOCAL_DIR := $(GET_LOCAL_DIR)
 
 QCDTBS += \
+	$(LOCAL_DIR)/mdm9307-mtp.dtb \
 	$(LOCAL_DIR)/mdm9607-mtp.dtb \

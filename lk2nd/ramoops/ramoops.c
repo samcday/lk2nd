@@ -6,6 +6,7 @@
 #include <debug.h>
 #include <fastboot.h>
 #include <libfdt.h>
+#include <platform.h>
 #include <target.h>
 #include <zlib.h>
 
@@ -94,7 +95,7 @@ static int lk2nd_ramoops_dt_update(void *dtb, const char *cmdline, enum boot_typ
 		return 0;
 
 	ret = fdt_appendprop_addrrange(dtb, rmem_offset, offset, "reg",
-				       (uint32_t)region.base, region.size);
+				       PA((addr_t)region.base), region.size);
 	if (ret < 0)
 		return 0;
 
@@ -191,14 +192,38 @@ static void cmd_oem_ramoops_console(const char *arg, void *data, unsigned sz)
 {
 	struct ramoops_region region;
 	struct pram_buf *record;
-	uint8_t *record_base;
+	uint8_t *console, *scratch;
+	size_t capacity, start, size;
 
 	get_ramoops_region(&region);
 
-	record_base = region.base + region.dump_size;
-	record = (struct pram_buf*)record_base;
+	console = (uint8_t *)region.base + region.dump_size;
+	record = (struct pram_buf *)console;
+	capacity = region.console_size - sizeof(*record);
+	start = record->offt;
+	size = record->size;
 
-	fastboot_stage(record->data, record->size);
+	if ((record->sig & 0xffffff00) != (PERSISTENT_RAM_SIG & 0xffffff00) ||
+	    !size || size > capacity || start >= capacity) {
+		fastboot_fail("ramoops: no valid console buffer");
+		return;
+	}
+
+	if (start + size <= capacity) {
+		fastboot_stage(record->data + start, size);
+		return;
+	}
+
+	/* The ring buffer wrapped: copy it into scratch in order first */
+	if (size > target_get_max_flash_size()) {
+		fastboot_fail("ramoops: console buffer too large");
+		return;
+	}
+
+	scratch = target_get_scratch_address();
+	memcpy(scratch, record->data + start, capacity - start);
+	memcpy(scratch + capacity - start, record->data, size - (capacity - start));
+	fastboot_stage(scratch, size);
 }
 FASTBOOT_REGISTER("oem ramoops console", cmd_oem_ramoops_console);
 
